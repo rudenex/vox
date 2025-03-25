@@ -1,14 +1,12 @@
-name: Track GitHub Watchers
+name: Monitor GitHub Watchers
 
 on:
   schedule:
-    - cron: '0 0 * * *'  # This runs the workflow every day at midnight UTC
-  workflow_dispatch:  # Allows manual triggering of the workflow
+    - cron: '0 * * * *'  # Runs every hour
 
 jobs:
-  track-watchers:
+  monitor_watchers:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -20,12 +18,14 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests PyGithub
+          python -m pip install --upgrade pip
+          pip install requests python-dotenv PyGithub
 
-      - name: Run the watcher script
+      - name: Run watcher monitoring script
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MY_GITHUB_TOKEN: ${{ secrets.MY_GITHUB_TOKEN }}
           TELEGRAM_BOT_API_TOKEN: ${{ secrets.TELEGRAM_BOT_API_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         run: |
-          python track_watchers.py
+          python monitor_watchers.py  # Replace with the name of your script
+
