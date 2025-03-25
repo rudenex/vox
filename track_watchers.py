@@ -1,4 +1,3 @@
-import requests
 import os
 import logging
 from github import Github
@@ -6,12 +5,13 @@ from github import Github
 # Set up logging for better visibility
 logging.basicConfig(level=logging.INFO)
 
-# GitHub API Token (provided as an environment variable)
-token = os.getenv('GITHUB_TOKEN')
+# GitHub API Token (retrieved from environment variables)
+token = os.getenv('MY_GITHUB_TOKEN')
 
-# Telegram Bot API Token and Chat ID (provided as environment variables)
-telegram_api_token = os.getenv('TELEGRAM_BOT_API_TOKEN')
-telegram_chat_id = os.getenv('TELEGRAM_CHAT_ID')
+# Ensure the token is retrieved
+if not token:
+    logging.error("GitHub token not found. Please set the MY_GITHUB_TOKEN environment variable.")
+    exit(1)
 
 # Initialize GitHub API client with token
 g = Github(token)
@@ -34,9 +34,9 @@ def get_watchers(repo_name):
 
 # Function to send a message to Telegram
 def send_telegram_message(message):
-    telegram_url = f'https://api.telegram.org/bot{telegram_api_token}/sendMessage'
+    telegram_url = f'https://api.telegram.org/bot{os.getenv("TELEGRAM_BOT_API_TOKEN")}/sendMessage'
     payload = {
-        'chat_id': telegram_chat_id,
+        'chat_id': os.getenv('TELEGRAM_CHAT_ID'),
         'text': message
     }
     response = requests.post(telegram_url, data=payload)
@@ -74,4 +74,6 @@ def track_new_watchers():
                 file.write("\n".join(current_watchers))
 
 # Run the function
-track_new_watchers()
+if __name__ == "__main__":
+    track_new_watchers()
+
