@@ -25,9 +25,12 @@ jobs:
       - name: List files for debugging
         run: ls -R  # List files to ensure the script exists
 
+      - name: Set MY_GITHUB_TOKEN environment variable
+        run: echo "MY_GITHUB_TOKEN=${{ secrets.GITHUB_TOKEN }}" >> $GITHUB_ENV
+
       - name: Run the watcher script
-        run: python track_watchers.py  # Ensure this matches the script name
+        run: python track_watchers.py
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MY_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Set MY_GITHUB_TOKEN explicitly
           TELEGRAM_BOT_API_TOKEN: ${{ secrets.TELEGRAM_BOT_API_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
